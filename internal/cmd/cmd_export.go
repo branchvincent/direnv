@@ -5,6 +5,8 @@ import (
 	"log"
 	"sort"
 	"strings"
+
+	"github.com/urfave/cli/v3"
 )
 
 func supportedShellFormattedString() string {
@@ -18,13 +20,12 @@ func supportedShellFormattedString() string {
 }
 
 // CmdExport is `direnv export $0`
-var CmdExport = &Cmd{
+var CmdExport = &cli.Command{
 	Name: "export",
-	Desc: `Loads an .envrc or .env and prints the diff in terms of exports.
+	Usage: `Loads an .envrc or .env and prints the diff in terms of exports.
   Supported SHELL values are: ` + supportedShellFormattedString(),
-	Args:    []string{"SHELL"},
-	Private: false,
-	Action:  cmdWithWarnTimeout(actionWithConfig(exportCommand)),
+	ArgsUsage: "SHELL",
+	Action:    cmdWithWarnTimeout(actionWithConfig(exportCommand)),
 }
 
 func exportCommand(currentEnv Env, args []string, config *Config) (err error) {

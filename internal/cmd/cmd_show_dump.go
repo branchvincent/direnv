@@ -6,15 +6,16 @@ import (
 	"os"
 
 	"github.com/direnv/direnv/v2/gzenv"
+	"github.com/urfave/cli/v3"
 )
 
 // CmdShowDump is `direnv show_dump`
-var CmdShowDump = &Cmd{
-	Name:    "show_dump",
-	Desc:    "Show the data inside of a dump for debugging purposes",
-	Args:    []string{"DUMP"},
-	Private: true,
-	Action:  actionSimple(cmdShowDumpAction),
+var CmdShowDump = &cli.Command{
+	Name:      "show_dump",
+	Usage:     "Show the data inside of a dump for debugging purposes",
+	ArgsUsage: "DUMP",
+	Hidden:    true,
+	Action:    actionSimple(cmdShowDumpAction),
 }
 
 func cmdShowDumpAction(_ Env, args []string) (err error) {

@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdAllow is `direnv allow [PATH_TO_RC]`
-var CmdAllow = &Cmd{
-	Name:    "allow",
-	Desc:    "Grants direnv permission to load the given .envrc or .env file.",
-	Args:    []string{"[PATH_TO_RC]"},
-	Aliases: []string{"permit", "grant"},
-	Action:  actionWithConfig(cmdAllowAction),
+var CmdAllow = &cli.Command{
+	Name:      "allow",
+	Usage:     "Grants direnv permission to load the given .envrc or .env file.",
+	Arguments: []cli.Argument{&cli.StringArg{Name: "PATH_TO_RC", Max: 1}},
+	Aliases:   []string{"permit", "grant"},
+	Action:    actionWithConfig(cmdAllowAction),
 }
 
 var migrationMessage = `

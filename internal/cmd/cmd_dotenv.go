@@ -2,21 +2,23 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/direnv/direnv/v2/pkg/dotenv"
 	"os"
 	"path/filepath"
+
+	"github.com/direnv/direnv/v2/pkg/dotenv"
+	"github.com/urfave/cli/v3"
 )
 
 // CmdDotEnv is `direnv dotenv [SHELL [PATH_TO_DOTENV]]`
 // Transforms a .env file to evaluatable `export KEY=PAIR` statements.
 //
 // See: https://github.com/bkeepers/dotenv and https://github.com/ddollar/foreman
-var CmdDotEnv = &Cmd{
-	Name:    "dotenv",
-	Desc:    "Transforms a .env file to evaluatable `export KEY=PAIR` statements",
-	Args:    []string{"[SHELL]", "[PATH_TO_DOTENV]"},
-	Private: true,
-	Action:  actionSimple(cmdDotEnvAction),
+var CmdDotEnv = &cli.Command{
+	Name:      "dotenv",
+	Usage:     "Transforms a .env file to evaluatable `export KEY=PAIR` statements",
+	ArgsUsage: "[SHELL] [PATH_TO_DOTENV]",
+	Hidden:    true,
+	Action:    actionSimple(cmdDotEnvAction),
 }
 
 func cmdDotEnvAction(_ Env, args []string) (err error) {

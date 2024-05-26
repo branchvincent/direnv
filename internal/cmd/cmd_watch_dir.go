@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdWatchDir is `direnv watch-dir SHELL PATH`
-var CmdWatchDir = &Cmd{
-	Name:    "watch-dir",
-	Desc:    "Recursively adds a directory to the list that direnv watches for changes",
-	Args:    []string{"SHELL", "DIR"},
-	Private: true,
-	Action:  actionSimple(watchDirCommand),
+var CmdWatchDir = &cli.Command{
+	Name:      "watch-dir",
+	Usage:     "Recursively adds a directory to the list that direnv watches for changes",
+	ArgsUsage: "SHELL DIR",
+	Hidden:    true,
+	Action:    actionSimple(watchDirCommand),
 }
 
 func watchDirCommand(env Env, args []string) (err error) {

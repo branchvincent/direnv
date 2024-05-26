@@ -3,13 +3,19 @@ package cmd
 import (
 	"errors"
 	"fmt"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdLog is `direnv log [--status | --error] <message>`
-var CmdLog = &Cmd{
-	Name:   "log",
-	Desc:   "Logs a given message",
-	Args:   []string{"[--status | --error]", "<message>"},
+var CmdLog = &cli.Command{
+	Name:      "log",
+	Usage:     "Logs a given message",
+	Arguments: []cli.Argument{&cli.StringArg{Name: "message", Max: 1}},
+	Flags: []cli.Flag{
+		&cli.BoolFlag{Name: "status", Usage: ""},
+		&cli.BoolFlag{Name: "error", Usage: ""},
+	},
 	Action: actionWithConfig(cmdLog),
 }
 

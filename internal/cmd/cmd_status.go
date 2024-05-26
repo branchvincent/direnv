@@ -4,13 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"path/filepath"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdStatus is `direnv status`
-var CmdStatus = &Cmd{
-	Name: "status",
-	Desc: "Prints some debug status information",
-	Args: []string{"[--json]"},
+var CmdStatus = &cli.Command{
+	Name:  "status",
+	Usage: "Prints some debug status information",
+	Flags: []cli.Flag{
+		&cli.BoolFlag{Name: "json", Usage: "Print as JSON"},
+	},
 	Action: actionWithConfig(func(_ Env, args []string, config *Config) error {
 		if len(args) > 1 && (args[1] == "-json" || args[1] == "--json") {
 			loadedRC := config.LoadedRC()

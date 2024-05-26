@@ -7,15 +7,17 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdEdit is `direnv edit [PATH_TO_RC]`
-var CmdEdit = &Cmd{
+var CmdEdit = &cli.Command{
 	Name: "edit",
-	Desc: `Opens PATH_TO_RC or the current .envrc or .env into an $EDITOR and allow
+	Usage: `Opens PATH_TO_RC or the current .envrc or .env into an $EDITOR and allow
   the file to be loaded afterwards.`,
-	Args:   []string{"[PATH_TO_RC]"},
-	Action: actionWithConfig(cmdEditAction),
+	ArgsUsage: "[PATH_TO_RC]",
+	Action:    actionWithConfig(cmdEditAction),
 }
 
 func cmdEditAction(env Env, args []string, config *Config) (err error) {

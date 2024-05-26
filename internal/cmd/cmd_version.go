@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/urfave/cli/v3"
 	"golang.org/x/mod/semver"
 )
 
 // CmdVersion is `direnv version`
-var CmdVersion = &Cmd{
-	Name:    "version",
-	Desc:    "prints the version or checks that direnv is older than VERSION_AT_LEAST.",
-	Args:    []string{"[VERSION_AT_LEAST]"},
-	Aliases: []string{"--version"},
+var CmdVersion = &cli.Command{
+	Name:      "version",
+	Usage:     "prints the version or checks that direnv is older than VERSION_AT_LEAST.",
+	ArgsUsage: "[VERSION_AT_LEAST]",
 	Action: actionSimple(func(_ Env, args []string) error {
 		semVersion := ensureVPrefixed(version)
 		if len(args) > 1 {

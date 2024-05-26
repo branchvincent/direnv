@@ -10,14 +10,15 @@ import (
 
 	"github.com/direnv/direnv/v2/pkg/sri"
 	"github.com/mattn/go-isatty"
+	"github.com/urfave/cli/v3"
 )
 
 // CmdFetchURL is `direnv fetchurl <url> [<integrity-hash>]`
-var CmdFetchURL = &Cmd{
-	Name:   "fetchurl",
-	Desc:   "Fetches a given URL into direnv's CAS",
-	Args:   []string{"<url>", "[<integrity-hash>]"},
-	Action: actionWithConfig(cmdFetchURL),
+var CmdFetchURL = &cli.Command{
+	Name:      "fetchurl",
+	Usage:     "Fetches a given URL into direnv's CAS",
+	ArgsUsage: "<url> [<integrity-hash>]",
+	Action:    actionWithConfig(cmdFetchURL),
 }
 
 func cmdFetchURL(_ Env, args []string, config *Config) (err error) {

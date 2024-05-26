@@ -22,7 +22,7 @@ func Main(env Env, args []string, modBashPath string, modStdlib string, modVersi
 	stdlib = modStdlib
 	version = modVersion
 
-	err := CommandsDispatch(env, args)
+	err := Run(env, args)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, errorColor+"%sdirenv: error %v%s", errorColor, err, clearColor)
 	}

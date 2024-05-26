@@ -3,15 +3,17 @@ package cmd
 import (
 	"fmt"
 	"os"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdApplyDump is `direnv apply_dump FILE`
-var CmdApplyDump = &Cmd{
-	Name:    "apply_dump",
-	Desc:    "Accepts a filename containing `direnv dump` output and generates a series of bash export statements to apply the given env",
-	Args:    []string{"FILE"},
-	Private: true,
-	Action:  actionSimple(cmdApplyDumpAction),
+var CmdApplyDump = &cli.Command{
+	Name:      "apply_dump",
+	Usage:     "Accepts a filename containing `direnv dump` output and generates a series of bash export statements to apply the given env",
+	ArgsUsage: "FILE",
+	Hidden:    true,
+	Action:    actionSimple(cmdApplyDumpAction),
 }
 
 func cmdApplyDumpAction(env Env, args []string) (err error) {

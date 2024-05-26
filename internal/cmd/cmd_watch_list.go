@@ -8,15 +8,17 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdWatchList is `direnv watch-list`
-var CmdWatchList = &Cmd{
-	Name:    "watch-list",
-	Desc:    "Pipe pairs of `mtime path` to stdin to build a list of files to watch.",
-	Args:    []string{"[SHELL]"},
-	Private: true,
-	Action:  actionSimple(watchListCommand),
+var CmdWatchList = &cli.Command{
+	Name:      "watch-list",
+	Usage:     "Pipe pairs of `mtime path` to stdin to build a list of files to watch.",
+	ArgsUsage: "[SHELL]",
+	Hidden:    true,
+	Action:    actionSimple(watchListCommand),
 }
 
 func watchListCommand(env Env, args []string) (err error) {

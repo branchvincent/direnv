@@ -1,10 +1,13 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
 	"text/template"
+
+	"github.com/urfave/cli/v3"
 )
 
 // HookContext are the variables available during hook template evaluation
@@ -14,19 +17,15 @@ type HookContext struct {
 }
 
 // CmdHook is `direnv hook $0`
-var CmdHook = &Cmd{
-	Name:   "hook",
-	Desc:   "Used to setup the shell hook",
-	Args:   []string{"SHELL"},
-	Action: actionSimple(cmdHookAction),
+var CmdHook = &cli.Command{
+	Name:      "hook",
+	Usage:     "Used to setup the shell hook",
+	Arguments: []cli.Argument{&cli.StringArg{Name: "SHELL", Min: 1, Max: 1}},
+	Action:    cmdHookAction,
 }
 
-func cmdHookAction(_ Env, args []string) (err error) {
-	var target string
-
-	if len(args) > 1 {
-		target = args[1]
-	}
+func cmdHookAction(_ context.Context, cmd *cli.Command) (err error) {
+	target := cmd.Args().First()
 
 	selfPath, err := os.Executable()
 	if err != nil {

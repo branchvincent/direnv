@@ -4,12 +4,14 @@ import (
 	"os"
 	"path"
 	"strings"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdPrune is `direnv prune`
-var CmdPrune = &Cmd{
+var CmdPrune = &cli.Command{
 	Name:   "prune",
-	Desc:   "Removes old allowed files",
+	Usage:  "Removes old allowed files",
 	Action: actionWithConfig(cmdPruneAction),
 }
 

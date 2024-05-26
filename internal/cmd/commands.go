@@ -1,81 +1,64 @@
 package cmd
 
 import (
-	"fmt"
-	"strings"
+	"context"
 	"time"
+
+	"github.com/urfave/cli/v3"
 )
 
-type actionSimple func(env Env, args []string) error
+type actionSimpleFn func(env Env, args []string) error
 
-func (fn actionSimple) Call(env Env, args []string, _ *Config) error {
-	return fn(env, args)
-}
-
-type actionWithConfig func(env Env, args []string, config *Config) error
-
-func (fn actionWithConfig) Call(env Env, args []string, config *Config) error {
-	var err error
-	if config == nil {
-		config, err = LoadConfig(env)
-		if err != nil {
-			return err
-		}
+func actionSimple(fn actionSimpleFn) cli.ActionFunc {
+	return func(_ context.Context, cmd *cli.Command) error {
+		env := cmd.Root().Metadata["env"].(Env)
+		return fn(env, cmd.Args().Slice())
 	}
-
-	return fn(env, args, config)
 }
 
-type action interface {
-	Call(env Env, args []string, config *Config) error
-}
+type actionFn func(env Env, args []string, config *Config) error
 
-// Cmd represents a direnv sub-command
-type Cmd struct {
-	Name    string
-	Desc    string
-	Args    []string
-	Aliases []string
-	Private bool
-	Action  action
+func actionWithConfig(fn actionFn) cli.ActionFunc {
+	return func(_ context.Context, cmd *cli.Command) error {
+		env := cmd.Root().Metadata["env"].(Env)
+		config := cmd.Root().Metadata["config"].(*Config)
+		return fn(env, cmd.Args().Slice(), config)
+	}
 }
 
 // CmdList contains the list of all direnv sub-commands
-var CmdList []*Cmd
-
-func init() {
-	CmdList = []*Cmd{
-		CmdAllow,
-		CmdApplyDump,
-		CmdShowDump,
-		CmdDeny,
-		CmdDotEnv,
-		CmdDump,
-		CmdEdit,
-		CmdExec,
-		CmdExport,
-		CmdFetchURL,
-		CmdHelp,
-		CmdHook,
-		CmdPrune,
-		CmdReload,
-		CmdStatus,
-		CmdStdlib,
-		CmdVersion,
-		CmdWatch,
-		CmdWatchDir,
-		CmdWatchList,
-		CmdWatchPrint,
-		CmdCurrent,
-		CmdLog,
-	}
+var CmdList = []*cli.Command{
+	CmdAllow,
+	CmdApplyDump,
+	CmdShowDump,
+	CmdDeny,
+	CmdDotEnv,
+	CmdDump,
+	CmdEdit,
+	CmdExec,
+	CmdExport,
+	CmdFetchURL,
+	CmdHook,
+	CmdPrune,
+	CmdReload,
+	CmdStatus,
+	CmdStdlib,
+	CmdVersion,
+	CmdWatch,
+	CmdWatchDir,
+	CmdWatchList,
+	CmdWatchPrint,
+	CmdCurrent,
+	CmdLog,
 }
 
-func cmdWithWarnTimeout(fn action) action {
-	return actionWithConfig(func(env Env, args []string, config *Config) (err error) {
+func cmdWithWarnTimeout(fn cli.ActionFunc) cli.ActionFunc {
+	return func(ctx context.Context, cmd *cli.Command) (err error) {
+		config := cmd.Metadata["config"].(*Config)
+
 		// Disable warning if WarnTimeout is <= 0
 		if config.WarnTimeout <= 0 {
-			return fn.Call(env, args, config)
+			return fn(ctx, cmd)
 		}
 
 		done := make(chan bool, 1)
@@ -84,48 +67,34 @@ func cmdWithWarnTimeout(fn action) action {
 			case <-done:
 				return
 			case <-time.After(config.WarnTimeout):
+				args := cmd.Args().Slice()
 				logError(config, "(%v) is taking a while to execute. Use CTRL-C to give up.", args)
 			}
 		}()
 
-		err = fn.Call(env, args, config)
+		err = fn(ctx, cmd)
 		done <- true
 		return err
-	})
+	}
 }
 
-// CommandsDispatch is called by the main() function to dispatch to a sub-command
-func CommandsDispatch(env Env, args []string) error {
-	var command *Cmd
-	var commandName string
-	var commandPrefix string
-	var commandArgs []string
-
-	if len(args) < 2 {
-		commandName = "help"
-		commandPrefix = args[0]
-		commandArgs = []string{}
-	} else {
-		commandName = args[1]
-		commandPrefix = strings.Join(args[0:2], " ")
-		commandArgs = append([]string{commandPrefix}, args[2:]...)
-	}
-
-	for _, cmd := range CmdList {
-		if cmd.Name == commandName {
-			command = cmd
-			break
-		}
-		for _, alias := range cmd.Aliases {
-			if alias == commandName {
-				command = cmd
+func Run(env Env, args []string) error {
+	app := &cli.Command{
+		Name:  "direnv",
+		Usage: "Load/unload environment variables based on $PWD",
+		Before: func(_ context.Context, cmd *cli.Command) (context.Context, error) {
+			config, err := LoadConfig(env)
+			if err != nil {
+				return nil, err
 			}
-		}
+			cmd.Metadata["config"] = config
+			cmd.Metadata["env"] = env
+			return nil, nil
+		},
+		Commands:                   CmdList,
+		EnableShellCompletion:      true,
+		ShellCompletionCommandName: "completion",
+		Version:                    version,
 	}
-
-	if command == nil {
-		return fmt.Errorf("command \"%s\" not found", commandPrefix)
-	}
-
-	return command.Action.Call(env, commandArgs, nil)
+	return app.Run(context.Background(), args)
 }

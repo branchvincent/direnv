@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdDump is `direnv dump`
-var CmdDump = &Cmd{
-	Name:    "dump",
-	Desc:    "Used to export the inner bash state at the end of execution",
-	Args:    []string{"[SHELL]", "[FILE]"},
-	Private: true,
-	Action:  actionSimple(cmdDumpAction),
+var CmdDump = &cli.Command{
+	Name:      "dump",
+	Usage:     "Used to export the inner bash state at the end of execution",
+	ArgsUsage: "[SHELL] [FILE]",
+	Hidden:    true,
+	Action:    actionSimple(cmdDumpAction),
 }
 
 func cmdDumpAction(env Env, args []string) (err error) {

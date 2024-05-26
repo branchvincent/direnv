@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdDeny is `direnv deny [PATH_TO_RC]`
-var CmdDeny = &Cmd{
-	Name:    "block",
-	Desc:    "Revokes the authorization of a given .envrc or .env file.",
-	Args:    []string{"[PATH_TO_RC]"},
-	Aliases: []string{"deny", "disallow", "revoke"},
-	Action:  actionWithConfig(cmdDenyAction),
+var CmdDeny = &cli.Command{
+	Name:      "block",
+	Usage:     "Revokes the authorization of a given .envrc or .env file.",
+	ArgsUsage: "[PATH_TO_RC]",
+	Aliases:   []string{"deny", "disallow", "revoke"},
+	Action:    actionWithConfig(cmdDenyAction),
 }
 
 func cmdDenyAction(_ Env, args []string, config *Config) (err error) {

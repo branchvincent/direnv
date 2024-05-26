@@ -5,14 +5,16 @@ import (
 	"os"
 	"path/filepath"
 	"syscall"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdExec is `direnv exec DIR <COMMAND> ...`
-var CmdExec = &Cmd{
-	Name:   "exec",
-	Desc:   "Executes a command after loading the first .envrc or .env found in DIR",
-	Args:   []string{"DIR", "COMMAND", "[...ARGS]"},
-	Action: actionWithConfig(cmdExecAction),
+var CmdExec = &cli.Command{
+	Name:      "exec",
+	Usage:     "Executes a command after loading the first .envrc or .env found in DIR",
+	ArgsUsage: "DIR COMMAND [...ARGS]",
+	Action:    actionWithConfig(cmdExecAction),
 }
 
 func cmdExecAction(env Env, args []string, config *Config) (err error) {

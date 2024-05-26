@@ -2,15 +2,19 @@ package cmd
 
 import (
 	"fmt"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdWatchPrint is `direnv watch-print`
-var CmdWatchPrint = &Cmd{
-	Name:    "watch-print",
-	Desc:    "prints the watched paths",
-	Args:    []string{"[--null]"},
-	Private: true,
-	Action:  actionSimple(cmdWatchPrintAction),
+var CmdWatchPrint = &cli.Command{
+	Name:  "watch-print",
+	Usage: "prints the watched paths",
+	Flags: []cli.Flag{
+		&cli.BoolFlag{Name: "null", Usage: "Print null-terminated paths"},
+	},
+	Hidden: true,
+	Action: actionSimple(cmdWatchPrintAction),
 }
 
 func cmdWatchPrintAction(env Env, args []string) (err error) {

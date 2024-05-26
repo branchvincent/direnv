@@ -2,15 +2,17 @@ package cmd
 
 import (
 	"errors"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdCurrent is `direnv current`
-var CmdCurrent = &Cmd{
-	Name:    "current",
-	Desc:    "Reports whether direnv's view of a file is current (or stale)",
-	Args:    []string{"PATH"},
-	Private: true,
-	Action:  actionSimple(cmdCurrentAction),
+var CmdCurrent = &cli.Command{
+	Name:      "current",
+	Usage:     "Reports whether direnv's view of a file is current (or stale)",
+	Arguments: []cli.Argument{&cli.StringArg{Name: "PATH", Max: 1}},
+	Hidden:    true,
+	Action:    actionSimple(cmdCurrentAction),
 }
 
 func cmdCurrentAction(env Env, args []string) (err error) {

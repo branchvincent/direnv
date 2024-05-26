@@ -3,15 +3,17 @@ package cmd
 import (
 	"fmt"
 	"os"
+
+	"github.com/urfave/cli/v3"
 )
 
 // CmdWatch is `direnv watch SHELL [PATH...]`
-var CmdWatch = &Cmd{
-	Name:    "watch",
-	Desc:    "Adds a path to the list that direnv watches for changes",
-	Args:    []string{"SHELL", "PATH..."},
-	Private: true,
-	Action:  actionSimple(cmdWatchAction),
+var CmdWatch = &cli.Command{
+	Name:      "watch",
+	Usage:     "Adds a path to the list that direnv watches for changes",
+	ArgsUsage: "SHELL PATH...",
+	Hidden:    true,
+	Action:    actionSimple(cmdWatchAction),
 }
 
 func cmdWatchAction(env Env, args []string) (err error) {
